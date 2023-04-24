@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+    #signup {
+    background: white;
+    max-width: 60em;
+    border-radius: 1em;
+    border: solid 2px black;
+    margin:auto;
+    margin-top: 2em;
+        text-align: center;
+    }
+    </style>
+<div id="signup">
+
+
+
+<h1>Sign up for a debatex account</h1>
+<form method="post">
+    <p style="color:red">{{ err }}</p>
+    <p>Screen Name</p>
+    <p style="color: grey">Must be 8-20 characters, alphanumeric.</p>
+    <input name="username">
+    <p>Password</p>
+    <p style="color: grey"> Must be 8 characters, including uppercase, lowercase, digit, and a special character.</p>
+
+    <input name="password" type="password">
+    <p>Password (Confirm)</p>
+    <input name="password_confirm" type="password"><br><br>
+    <input type="submit" value="Submit">
+</form>
+</div>
+{% endblock %}

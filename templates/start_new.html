@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+#content {
+    width: 100%;
+    align-content: center;
+    text-align: center;
+}
+#debate-list {
+    background: white;
+    max-width: 60em;
+    border-radius: 1em;
+    border: solid 2px black;
+    margin:auto;
+    margin-top: 2em;
+    min-height: 60em;
+}
+
+</style>
+<div id="content">
+
+<div id="debate-list">
+<a href="/">Return Home</a>
+<h3>Create a new Debate</h3>
+    <form action="/create_debate" method="post">
+        <p>Title:</p>
+        <input type="text" name="title" style="width: 66%">
+        <input type="submit" value="Submit">
+
+    </form>
+</div>
+</div>
+
+
+{% endblock %}

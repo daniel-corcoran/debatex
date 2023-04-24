@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+    #login {
+    background: white;
+    max-width: 60em;
+    border-radius: 1em;
+    border: solid 2px black;
+    margin:auto;
+    margin-top: 2em;
+        text-align: center;
+    }
+    </style>
+<div id="login">
 
-</body>
-</html>
+    <h1>Log in to your debatex account</h1>
+<form method="POST" action="login">
+    <p style="color:red">{{ err }}</p>
+
+    <p>Username</p>
+    <input name="username">
+    <p>Password</p>
+    <input name="password" type="password"><br><br>
+    <input type="submit" value="Submit">
+</form>
+</div>
+{% endblock %}

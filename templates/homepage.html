@@ -7,14 +7,28 @@
     align-content: center;
     text-align: center;
 }
+#debate-list {
+    background: white;
+    max-width: 60em;
+    border-radius: 1em;
+    border: solid 2px black;
+    margin:auto;
+    margin-top: 2em;
+    min-height: 60em;
+}
 
 </style>
 <div id="content">
 
 <div id="debate-list">
 <h3>Select one from a list of thought-provoking Debates.</h3>
+{% if user.logged_in %}
+<p>Don't see what you're looking for? <a href="/create_debate"><button>Start a new debate</button></a></p>
+{% else %}
+    <p>Want to start the conversation with a new debate? <a href="/login">Log in</a> or <a href="/signup">Sign up</a>!  </p>
+{% endif %}
     {% for debate in debate_list %}
-    <a href="/view_debate?id={{ debate['debate_id'] }}">{{ debate['title'] }}</a>
+    <a href="/view_debate?id={{ debate['debate_id'] }}">{{ debate['title'] }}</a><br>
     {% endfor %}
 
 </div>
