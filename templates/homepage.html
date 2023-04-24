@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+#content {
+    width: 100%;
+    align-content: center;
+    text-align: center;
+}
+
+</style>
+<div id="content">
+
+<div id="debate-list">
+<h3>Select one from a list of thought-provoking Debates.</h3>
+    {% for debate in debate_list %}
+    <a href="/view_debate?id={{ debate['debate_id'] }}">{{ debate['title'] }}</a>
+    {% endfor %}
+
+</div>
+</div>
+
+
+{% endblock %}

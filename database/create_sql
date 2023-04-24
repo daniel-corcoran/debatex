@@ -1,0 +1,43 @@
+CREATE TABLE "debate" (
+	"debate_id"	INTEGER,
+	"title"	TEXT
+);
+CREATE TABLE "node" (
+        "debate_id" INTEGER,
+        "node_id" TEXT,
+        "type" TEXT,
+        "contents" TEXT
+);
+
+CREATE TABLE "edge" (
+	"debate_id" INTEGER,
+	"edge_id" INTEGER,
+	"source_node" TEXT,
+	"dest_node" TEXT,
+	"types" TEXT
+);
+
+CREATE TABLE "edit" (
+	"debate_id" INTEGER,
+	"edit_id" INTEGER,
+	"user_id" INTEGER,
+	"timestamp" TEXT,
+	"object_type" TEXT,
+	"contents_before" TEXT,
+	"contents_after" TEXT
+);
+
+CREATE TABLE "user" (
+	"user_id" INTEGER,
+	"user_name" TEXT,
+	"pass_hash" TEXT,
+	"last_login" TEXT
+);
+
+CREATE TABLE "vote" (
+    "debate_id" INTEGER,
+    "node_id" INTEGER,
+    "user_id" INTEGER,
+    "timestamp" TEXT,
+    "vote" TEXT
+)

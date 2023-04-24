@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="static/vis-network.min.js"></script>
+    <style>
+    #content {
+        display: flex;
+        height: 90%;
+    }
+    #editor {
+        width: 39%;
+        border: solid 2px black;
+        text-align: center;
+    }
+    #graph {
+        width: 60%;
+        border: solid 2px black;
+    }
+
+
+    </style>
+<div id="content">
+<div id="graph">
+    <!-- Graph goes here -->
+</div>
+
+<div id="editor">
+    <!-- Editor. user must be logged in -->
+    <h1>Create / Modify Node</h1>
+    <textarea></textarea><br>
+    <button>Submit</button>
+
+
+    <hr>
+
+
+    <h1>Create connection between nodes</h1>
+    <label for="connectionfrom">To: </label>
+
+    <select name="connectionto" id="connectionto">
+        <option value="None"></option>
+    </select>
+    <label for="connectionfrom">From: </label>
+    <select name="connectionfrom" id="connectionfrom">
+        <option value="None"></option>
+    </select>
+    <label for="connectionfrom">Type: </label>
+    <select name="connectiontype" id="connectiontype">
+        <option value="support">Support</option>
+        <option value="refute">Refute</option>
+
+    </select>
+    <button>Submit</button>
+
+    <hr>
+    <h1>Vote on this Node/Connection</h1>
+    <button>Like</button>
+    <button>Dislike</button>
+    <p>Current like-dislike ratio: NA</p>
+
+    <hr>
+    <h1>Comments</h1>
+    <p>Comment 1</p>
+
+</div>
+
+<script>
+
+      // create an array with nodes
+      var nodes = new vis.DataSet([
+        { id: 1, label: "Node 1" },
+        { id: 2, label: "Node 2" },
+        { id: 3, label: "Node 3" },
+        { id: 4, label: "Node 4" },
+        { id: 5, label: "Node 5" },
+      ]);
+
+      // create an array with edges
+      var edges = new vis.DataSet([
+        { from: 1, to: 3 },
+        { from: 1, to: 2 },
+        { from: 2, to: 4 },
+        { from: 2, to: 5 },
+        { from: 3, to: 3 },
+      ]);
+
+      // create a network
+      var container = document.getElementById("graph");
+      var data = {
+        nodes: nodes,
+        edges: edges,
+      };
+      var options = {};
+      var network = new vis.Network(container, data, options);
+
+</script>
+
+
+</div>
+{% endblock %}
