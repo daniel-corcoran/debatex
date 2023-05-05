@@ -1,124 +1,285 @@
 {% extends 'base.html' %}
+{% block title %} - {{ title }}{% endblock %}
 {% block content %}
 <script src="static/vis-network.min.js"></script>
     <style>
-    #content {
-        display: flex;
-        height: 90%;
-        margin-top: 2em;
-    }
-    #editor {
-        width: 39%;
-        border: solid 2px black;
-        text-align: center;
-        background: white;
-         border-radius: 1em;
-    }
-    #graph {
-        width: 60%;
-        border: solid 2px black;
-        background: white;
-
-        border-radius: 1em;
-        text-align: center;
-
-    }
-    #edit_text {
-        width: 99%;
-        height: 15em;
+    .hider-button {
+        width: 90%;
+        font-size: 50px;
+        background-color: whitesmoke;
+        margin: 5px;
         border: solid 1px black;
+        border-radius: 5px;
+    }
+
+    #color_slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 25px;
+      background: linear-gradient(90deg, #c7fecb, #ffc7f7);
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+
+    }
+
+    #color_slider:hover {
+      opacity: 1;
+    }
+
+    #color_slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      background: #383f3f;
+        border: solid 2px black;
+        border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #color_slider::-moz-range-thumb {
+      width: 25px;
+              background: #383f3f;
+        border: solid 2px black;
+        border-radius: 3px;
+      height: 25px;
+
+      cursor: pointer;
+    }
+
+    @media only screen and (min-width: 1000px) {
+
+        #content {
+            display: flex;
+            height: 90%;
+            margin-top: 2em;
+        }
+
+        #editor {
+            width: 39%;
+            border: solid 2px black;
+            text-align: center;
+            background: white;
+            border-radius: 1em;
+            overflow-y: scroll;
+        }
+
+        #graph {
+            width: 60%;
+            border: solid 2px black;
+            background: white;
+
+            border-radius: 1em;
+            text-align: center;
+
+        }
+
+        .premise_textarea {
+            width: 99%;
+            height: 15em;
+            border: solid 1px black;
+        }
+        #mobile-placeholder {
+            display: none;
+        }
+        #hider-placeholder {
+            display: none;
+        }
+    }
+    @media only screen and (max-width: 1000px) {
+        #hider-placeholder {
+            display: none;
+        }
+        #editor-holder {
+            display: none;
+        }
+        #content {
+            display: block;
+            height: 90%;
+            margin-top: 2em;
+        }
+
+        #editor {
+            width: 100%;
+            height: 10%;
+            border: solid 2px black;
+            text-align: center;
+            background: white;
+            border-radius: 1em;
+        }
+
+        #graph {
+            width: 100%;
+            height: 90%;
+            border: solid 2px black;
+            background: white;
+
+            border-radius: 1em;
+            text-align: center;
+
+        }
+
+       .premise_textarea  {
+            width: 99%;
+            height: 15em;
+            border: solid 1px black;
+        }
+
+
     }
 
 
     </style>
 <div id="content">
 <div id="graph">
-    <h1>{{ title }}</h1>
-    <div id="graph_container"></div>
+    <div id="title-container" style="height: 5%"><h1>{{ title }}</h1></div>
+    <div id="graph_container_container" style="height: 95%;"><div id="graph_container"></div></div>
     <!-- Graph goes here -->
 </div>
 
 <div id="editor">
-    <!-- Editor. user must be logged in -->
-    <p style="color: blue">{{ msg }}</p>
-    {% if user.logged_in %}
-    <h1>Add Premise</h1>
-    <p>Type in here a new premise to support one of the premises seen here.</p>
-    <p>Please write a premise that is distinct from any existing premises, and keep it concise. </p>
-    <form action="/add_premise" method="POST">
-    <textarea id="edit_text" name="premise"></textarea><br>
-    <input type="hidden" name="debate_id" value = {{ debate_id }}>
-    <input type="submit" value="Submit">
-    </form>
-
-    <hr>
-
-    <form action="/add_connection" method="post">
-
-    <h1>Connect Premises</h1>
-    <p>Define a connection between two premises that either support, refute or contradict each other.</p>
-
-    <select name="connectionto" id="connectionto">
-    {%  for node in nodes %}
-    <option value="{{ node.id }}">{{ node.label }}</option>
-    {% endfor %}
-    </select>
-    <select name="connectiontype" id="connectiontype">
-        <option value="support">Supports</option>
-        <option value="refute">Refutes</option>
-        <option value="contradict">Contradicts</option>
-    </select>
-    <select name="connectionfrom" id="connectionfrom">
-    {%  for node in nodes %}
-    <option value="{{ node.id }}">{{ node.label }}</option>
-    {% endfor %}    </select>
-
-    <input type="hidden" name="debate_id" value = {{ debate_id }}>
-    <input type="submit" value="Connect">
-    </form>
-
-    <hr>
-        <div id="vote_node"hidden>
-            <h3>Vote on premise: <span id="premise_id"></span></h3>
-            <button action="like_selection()">Like</button>
-            <button action="dislike_selection()">Dislike</button>
-            <p>Current like-dislike ratio: <span id="node_like_ratio"></span></p>
+    <div id="loadable_parent">
+        <div id="mobile-placeholder" onClick="show_tools();">
+            <button class="hider-button">Click here to open tools</button>
         </div>
-        <div id="vote_edge" hidden>
-            <h3>Vote on connection: <span id="connection_id"></span></h3>
-            <button action="like_selection()">Like</button>
-            <button action="dislike_selection()">Dislike</button>
-        <p>Current like-dislike ratio: <span id="edge_like_ratio"></span></p>
+        <div id="hider-placeholder" onClick="hide_tools();">
+            <button class="hider-button">Click here to hide tools</button>
         </div>
-    {% if user.name == 'daniel' %}
-        <hr>
-        <form action="/delete_edge" method="post">
-            <h1>Delete Edge</h1>
-            <input type="text" name="delete_edge" id="delete_edge" placeholder="Click an edge to delete">
-            <input type="hidden" name="debate_id" value = {{ debate_id }}>
-            <input type="submit" value="Delete"></input>
-        </form>
-        <hr>
-        <form action="/delete_node" method="post">
-            <h1>Delete node</h1>
-            <input type="text" name="delete_node" id="delete_node" placeholder="Click an node to delete">
-            <input type="hidden" name="debate_id" value = {{ debate_id }}>
-            <input type="submit" value="Delete"></input>
-        </form>
-    {% endif %}
-    {% else %}
-    <h2>Log in to add your own views and connections to this debate!</h2>
-    {% endif %}
+        <!-- Editor. user must be logged in -->
+        <div id="editor-holder">
+            <p style="color: blue">{{ msg }}</p>
+            {% if user.logged_in %}
+            <div id="add_premise">
+                <h1>Add Premise</h1>
+                <p>Type in here a new premise to support one of the premises seen here.</p>
+                <p>Please write a premise that is distinct from any existing premises, and keep it concise. </p>
+                <form action="/add_premise" method="POST">
+                <textarea id="edit_text" class="premise_textarea" name="premise"></textarea><br>
+                <input type="hidden" name="debate_id" value = {{ debate_id }}>
+                <input type="submit" value="Submit">
+                </form>
+            </div>
+            <div id="edit_premise" hidden> <!-- Edit premise. Shown when a premise or node is highlighted -->
+                <h1>Edit <span id="node_type_edit">Premise</span></h1>
+                <span id="edit_premise_message" style="color: red"></span>
+                <p>Modify an existing node to correct typos, improve phrasing, or clarify reasoning. </p>
+                <p>It's best to stay within the ideas of the original node. </p>
+                <p>If your edit of this node differs extensively from the original content, then it's better to create a new node.</p>
+                <!-- todo: connect with AI to determine semantic similarity of two inputs to validate that they are consistent -->
+                <p>Edited node:</p>
+                <textarea id="update_premise_textarea" class="premise_textarea" name="premise" style="height: 7em"></textarea><br>
 
+                <p>Original premise:</p>
+                <textarea class="premise_textarea" id="original_premise" readonly style="height: 7em; background-color: lightgray"></textarea>
+                <input type="hidden" name="debate_id" value = {{ debate_id }}>
+                <input type="hidden" name="node_id" id="update_premise_node_id">
 
+                <input type="submit" id=update_node_submit value="Submit">
+
+            </div>
+            <hr>
+            <div id="connect_premises">
+                <form action="/add_connection" method="post">
+
+                <h1>Connect Premises</h1>
+                <p>Define a connection between two premises that either support, refute or contradict each other.</p>
+
+                <select name="connectionto" id="connectionto">
+                {%  for node in nodes %}
+                <option value="{{ node.id }}">{{ node.label }}</option>
+                {% endfor %}
+                </select>
+                <select name="connectiontype" id="connectiontype">
+                    <option value="support">Supports</option>
+                    <option value="refute">Refutes</option>
+                    <option value="contradict">Contradicts</option>
+                </select>
+                <select name="connectionfrom" id="connectionfrom">
+                {%  for node in nodes %}
+                <option value="{{ node.id }}">{{ node.label }}</option>
+                {% endfor %}    </select>
+
+                <input type="hidden" name="debate_id" value = {{ debate_id }}>
+                <input type="submit" value="Connect">
+                </form>
+            </div>
+            <hr>
+            <div id="vote">
+                <div id="vote_node"hidden>
+                    <h3>Vote on premise: <span id="premise_id"></span></h3>
+                    <button id="upvote_node">Like</button>
+                    <button id="downvote_node">Dislike</button>
+                    <p>Current like-dislike ratio: <span id="node_like_ratio"></span></p>
+                    <hr>
+                    <h3>Vote on premise color</h3>
+                    <input type="range" id="color_slider" min="0" max="100" value="50">
+                    <p>Your vote will be averaged with other votes to determine the color of the node.</p>
+                </div>
+                <div id="vote_edge" hidden>
+                    <h3>Vote on connection: <span id="connection_id"></span></h3>
+                    <button id="upvote_edge">Like</button>
+                    <button id="downvote_edge">Dislike</button>
+                <p>Current like-dislike ratio: <span id="edge_like_ratio"></span></p>
+                </div>
+            </div>
+
+            {% else %}
+            <h2>Log in to add your own views and connections to this debate!</h2>
+            {% endif %}
+            {% if user.name == 'daniel' %}
+            <div id="admin_tools">
+                <hr>
+                <form action="/delete_edge" method="post">
+                    <h1>Delete Edge</h1>
+                    <input type="text" name="delete_edge" id="delete_edge" placeholder="Click an edge to delete">
+                    <input type="hidden" name="debate_id" value = {{ debate_id }}>
+                    <input type="submit" value="Delete"></input>
+                </form>
+                <hr>
+                <form action="/delete_node" method="post">
+                    <h1>Delete node</h1>
+                    <input type="text" name="delete_node" id="delete_node" placeholder="Click an node to delete">
+                    <input type="hidden" name="debate_id" value = {{ debate_id }}>
+                    <input type="submit" value="Delete"></input>
+                </form>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    <div id="loading_parent" hidden>
+        <h1>Loading</h1>
+    </div>
 </div>
 
 <script>
+        function show_tools(){
+            document.getElementById('editor-holder').style.display = 'block';
+            document.getElementById('mobile-placeholder').style.display = 'none';
+            document.getElementById('hider-placeholder').style.display = 'block';
+            document.getElementById("graph").style.height = "20%";
+            document.getElementById('editor').style.height = "80%";
+        }
+        function hide_tools(){
 
+            document.getElementById('editor-holder').style.display = 'none';
+            document.getElementById('mobile-placeholder').style.display = 'block';
+            document.getElementById('hider-placeholder').style.display = 'none';
+            document.getElementById("graph").style.height = "90%";
+            document.getElementById('editor').style.height = "10%";
+        }
       // create an array with nodes
       var nodes = new vis.DataSet([
           {% for node in nodes %}
-             { id: {{ node.id }}, label: "{{node.label}}", shape: 'box', widthConstraint: { maximum: 250 }},
+             { id: {{ node.id }},
+                 color: "{{ node.color }}",
+                 color_int: {{ node.color_int }},
+                 label_raw:"{{node.label | safe}}",
+                 label: "{{node.label | safe}} \n\nLikes: {{ node.likes }}\nDislikes: {{ node.dislike }}\nRatio: {{ node.ratio }}",
+                 liking_raw: " \n\nLikes: {{ node.likes }}\nDislikes: {{ node.dislike }}\nRatio: {{ node.ratio }}",
+                 shape: 'box', widthConstraint: { maximum: 250 }},
           {% endfor %}
 
 
@@ -131,7 +292,7 @@
                  to: {{ edge.to }},
                  arrows: "{{ edge.arrow }}",
                  color: {{ edge.color | safe }},
-                 label: "{{ edge.label }}",
+                 label: "{{edge.label | safe}} \n\nLikes: {{ edge.likes }}\nDislikes: {{ edge.dislike }}\nRatio: {{ edge.ratio }}",
                  id: {{ edge.id }} },
           {% endfor %}
       ]);
@@ -142,11 +303,13 @@
         nodes: nodes,
         edges: edges,
       };
+
+      var user_votes = {{ user_votes | safe}};
     var options = {
       "physics": {
         "barnesHut": {
           "springConstant": 0.01,
-          "avoidOverlap": 0.1
+          "avoidOverlap": 0.5
         }
       }
     }
@@ -155,26 +318,151 @@
 
         network.on( 'click', function(properties) {
             console.log(properties)
+            document.getElementById('edit_premise').setAttribute("hidden", '')
+            document.getElementById('edit_premise_message').innerText = ''
+            document.getElementById('add_premise').removeAttribute('hidden')
             if(properties.nodes.length > 0){
                 // User selected a node
                 console.log("Node", properties.nodes, nodes.get(properties.nodes))
+                    {% if user.name == 'daniel' %}
+
                 document.getElementById('delete_node').value = nodes.get(properties.nodes)[0].id
+                {% endif %}
+                document.getElementById("update_premise_node_id").value = nodes.get(properties.nodes)[0].id
+                document.getElementById("update_premise_textarea").value = nodes.get(properties.nodes)[0].label_raw
+                document.getElementById("color_slider").value = nodes.get(properties.nodes)[0].color_int
+                document.getElementById("original_premise").value = nodes.get(properties.nodes)[0].label_raw
+
                 document.getElementById('vote_node').removeAttribute("hidden")
                 document.getElementById('vote_edge').setAttribute("hidden", '')
                 document.getElementById('premise_id').innerText = nodes.get(properties.nodes)[0].id
+                document.getElementById('edit_premise').removeAttribute("hidden")
+                document.getElementById('add_premise').setAttribute('hidden', '')
 
             }else if( properties.items.length > 0 ){
                 // User selected an edge
                 edge_id = edges.get(properties.items[0].edgeId).id
                 console.log("edge", edges.get(properties.items[0].edgeId).id)
-                document.getElementById('delete_edge').value = edges.get(properties.items[0].edgeId).id
+                    {% if user.name == 'daniel' %}
+                        document.getElementById('delete_edge').value = edges.get(properties.items[0].edgeId).id
+                    {% endif %}
                 document.getElementById('vote_edge').removeAttribute("hidden")
                 document.getElementById('vote_node').setAttribute("hidden", '')
                 document.getElementById("connection_id").innerText = edges.get(properties.items[0].edgeId).id
             }
     });
 
+    // Upvote object
+    $(function() {
+        $('#upvote_node').bind('click', function() {
+          $.getJSON('/submit_vote', {
+            debate_id: {{ debate_id }},
+            object_type: 'node',
+            object_id: document.getElementById("premise_id").innerText,
+            vote: 1
+          }, function(data) {
+          });
+          return false;
+        });
+      });
 
+    // Downvote object
+    $(function() {
+        $('#downvote_node').bind('click', function() {
+          $.getJSON('/submit_vote', {
+            debate_id: {{ debate_id }},
+            object_type: 'node',
+            object_id: document.getElementById("premise_id").innerText,
+            vote: -1
+          }, function(data) {
+          });
+          return false;
+        });
+      });
+
+      // Upvote object
+    $(function() {
+        $('#upvote_edge').bind('click', function() {
+          $.getJSON('/submit_vote', {
+            debate_id: {{ debate_id }},
+            object_type: 'edge',
+            object_id: document.getElementById("connection_id").innerText,
+            vote: 1
+          }, function(data) {
+          });
+          return false;
+        });
+      });
+
+    // Downvote object
+    $(function() {
+        $('#downvote_edge').bind('click', function() {
+          $.getJSON('/submit_vote', {
+            debate_id: {{ debate_id }},
+            object_type: 'edge',
+            object_id: document.getElementById("connection_id").innerText,
+            vote: -1
+          }, function(data) {
+          });
+          return false;
+        });
+      });
+
+    // Submit new color on release
+    $(function() {
+        $('#color_slider').on('change', function() {
+        document.getElementById('loadable_parent').setAttribute("hidden", '')
+        document.getElementById('loading_parent').removeAttribute('hidden')
+         $.getJSON('/vote_color', {
+            debate_id: {{ debate_id }},
+            node_id: document.getElementById("premise_id").innerText,
+            value: document.getElementById('color_slider').value,
+          }, function(data) {
+             node_id = document.getElementById("premise_id").innerText
+             //update node color with new_hex
+             const node_properties = nodes.get(parseInt(node_id))
+             console.log(node_properties)
+             node_properties.color = data.new_hex
+             console.log(data.new_hex)
+             nodes.update([{ ...node_properties, id: node_id, color: data.new_hex}])
+            document.getElementById('loading_parent').setAttribute("hidden", '')
+            document.getElementById('loadable_parent').removeAttribute('hidden')
+             //network.redraw();
+
+        })})})
+    // Update node edit.
+    $(function() {
+        $('#update_node_submit').bind('click', function() {
+          // Show loading
+            document.getElementById('loadable_parent').setAttribute("hidden", '')
+            document.getElementById('loading_parent').removeAttribute('hidden')
+            $.getJSON('/edit_premise', {
+            debate_id: {{ debate_id }},
+            node_id: document.getElementById('update_premise_node_id').value,
+            update: document.getElementById('update_premise_textarea').value,
+            original: document.getElementById("original_premise").value,
+          }, function(data) {
+                document.getElementById('loading_parent').setAttribute("hidden", '')
+                document.getElementById('loadable_parent').removeAttribute('hidden')
+                // Hide loading icon
+                if(data.verdict == 'accept'){
+                    // Update the node
+                    document.getElementById('edit_premise_message').innerText = "Update accepted!";
+                    node_id = parseInt(document.getElementById('update_premise_node_id').value)
+                    console.log(node_id)
+                    nodes.update([{id: node_id, label: (document.getElementById('update_premise_textarea').value + nodes.get(node_id).liking_raw).toString() }]);
+                    network.redraw()
+                    console.log("here");
+                    console.log(nodes.get())
+                    //nodes.updateOnly(nodes.get())
+                }else{
+                    document.getElementById('edit_premise_message').innerText = data.comment;
+                }
+
+          });
+          return false;
+        });
+      });
 
 </script>
 

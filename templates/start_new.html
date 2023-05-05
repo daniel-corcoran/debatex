@@ -16,6 +16,39 @@
     margin-top: 2em;
     min-height: 60em;
 }
+#loading-text {
+    opacity: 1;
+    transition: opacity 2s;
+    font-size: 2em;
+    color: #444;
+    text-align: center;
+    margin-top: 20%;
+}
+@keyframes fade {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.loop-text {
+    position: relative;
+    height: 40px;
+    overflow: hidden;
+}
+h3 {
+    position: absolute;
+    height: 30px;
+    opacity: 0;
+    transition: 1.75s ease-out;
+    width: 100%;
+}
+
+.show {
+  opacity: 1;
+}
+
+
+
 
 </style>
 <div id="content">
@@ -23,14 +56,50 @@
 <div id="debate-list">
 <a href="/">Return Home</a>
 <h3>Create a new Debate</h3>
-    <form action="/create_debate" method="post">
+    <form id=create_debate action="/create_debate" method="post">
         <p>Title:</p>
         <input type="text" name="title" style="width: 66%">
-        <input type="submit" value="Submit">
+        <input type="submit" onclick="showLoading()" value="Submit">
 
     </form>
+    <div id="loading" hidden>
+        <h1>Please be patient while our AI starts the debate for you.</h1>
+        <img src="static/loading.gif" style="width: 200px">
+<div class="loop-text">
+        <h3 class="loadword">Creating abstract syntax tree...    </h3>
+        <h3 class="loadword">Reparameterizing...            </h3>
+        <h3 class="loadword">Pruning redundant nodes...            </h3>
+        <h3 class="loadword">Applying inductive proofs...        </h3>
+        <h3 class="loadword">Extrapolating eigenvectors...       </h3>
+        <h3 class="loadword">Decomposing high-order functions... </h3>
+        <h3 class="loadword">Bifurcating decision trees...             </h3>
+</div>
+    </div>
 </div>
 </div>
+    <script>
+    function showLoading(){
+        document.getElementById('create_debate').setAttribute('hidden', '')
+        document.getElementById('loading').removeAttribute('hidden')
+       let texts = document.querySelectorAll(".loop-text h3");
+
+        let prev = null;
+        let animate = (curr, currIndex) => {
+          let index = (currIndex + 1) % texts.length
+          setTimeout(() => {
+            if(prev) {
+              prev.className = "";
+            }
+            curr.className = "show";
+            prev = curr;
+            animate(texts[index], index);
+          }, 3500);
+        }
+
+        animate(texts[0], 0);
+    }
+
+    </script>
 
 
 {% endblock %}

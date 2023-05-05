@@ -2,3 +2,5 @@ Flask
 gunicorn
 psycopg2
 flask_login
+openai
+matplotlib

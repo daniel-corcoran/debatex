@@ -2,11 +2,43 @@
 
 {% block content %}
 <style>
+body {
+    font-family: Arial, sans-serif;
+}
+
 #content {
     width: 100%;
-    align-content: center;
+    display: flex;
+    justify-content: center;
     text-align: center;
+    padding: 2em;
 }
+
+
+
+
+
+section {
+    margin-bottom: 2em;
+}
+
+hr {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+
+@media only screen and (min-width: 1000px) {
 #debate-list {
     background: white;
     max-width: 60em;
@@ -15,12 +47,111 @@
     margin:auto;
     margin-top: 2em;
     min-height: 60em;
+    padding-left: 5em;
+    padding-right: 5em;
+    padding-bottom: 2em;
 }
+.btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #0056B3;
+}
+.debate-list-title {
+    width: 80%;
+    background-color: #eee5e5;
+    border: solid 2px gray;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+}
+.debate-list-title:hover {
+    background-color: white;
+    border: solid 4px gray;
+    margin: 3px;
+}
+
+    }
+
+
+@media only screen and (max-width: 1000px) {
+#debate-list {
+    background: white;
+    max-width: 60em;
+    border-radius: 1em;
+    border: solid 2px black;
+    margin:auto;
+    margin-top: 2em;
+    min-height: 60em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 2em;
+}
+.btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #0056B3;
+}
+.debate-list-title {
+    width: 80%;
+    background-color: #eee5e5;
+    border: solid 2px gray;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+    font-size: 40px;
+}
+.debate-list-title:hover {
+    background-color: white;
+    border: solid 4px gray;
+    margin: 3px;
+}
+
+}
+
+
+
 
 </style>
 <div id="content">
 
 <div id="debate-list">
+<section id="intro">
+    <h1>Welcome to DebateX</h1>
+            <h3>Engage in Civil and Logical Political Debates</h3>
+            <p>DebateX is a platform dedicated to fostering structured, logical discussions on political topics. <br>We believe in the power of open, respectful conversations to bridge gaps and promote understanding.</p>
+</section>
+
+<hr>
+
+<section>
+            <h1>How It Works</h1>
+                    <h3>1. Craft Your Arguments</h3>
+                    <p>Add premises as nodes to build your case. Represent claims or data points to create a solid foundation for your debate.</p>
+
+                    <h3>2. Connect the Dots</h3>
+                    <p>Establish relationships between nodes by linking premises that support or contradict each other, weaving a coherent and logical web of arguments.</p>
+
+                    <h3>3. Shape the Debate</h3>
+                    <p>Vote on premises and connections you agree with, driving consensus and promoting well-founded arguments within the community.</p>
+
+                    <h3>4. Refine the Discussion</h3>
+                    <p>Participate in the daily elimination of the 10% most downvoted nodes, helping to maintain the quality and focus of the debates.</p>
+
+        </section>
+<hr>
+<h1>Ready to get started?</h1>
 <h3>Select one from a list of thought-provoking Debates.</h3>
 {% if user.logged_in %}
 <p>Don't see what you're looking for? <a href="/create_debate"><button>Start a new debate</button></a></p>
@@ -28,7 +159,7 @@
     <p>Want to start the conversation with a new debate? <a href="/login">Log in</a> or <a href="/signup">Sign up</a>!  </p>
 {% endif %}
     {% for debate in debate_list %}
-    <a href="/view_debate?id={{ debate['debate_id'] }}">{{ debate['title'] }}</a><br>
+        <a href="/view_debate?id={{ debate['debate_id'] }}"><button class="debate-list-title">{{ debate['title'] }}</button></a><br>
     {% endfor %}
 
 </div>

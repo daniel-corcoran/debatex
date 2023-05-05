@@ -36,8 +36,20 @@ CREATE TABLE "users" (
 
 CREATE TABLE "vote" (
     "debate_id" INTEGER,
-    "node_id" INTEGER,
-    "user_id" INTEGER,
+    "object_type" TEXT,
+    "object_id" INTEGER,
+    "user_name" TEXT,
     "timestamp" TEXT,
-    "vote" TEXT
+    "vote" INTEGER,
+      UNIQUE (debate_id, object_type, object_id, user_name)
 )
+create table color
+(
+    debate_id integer,
+    node_id   integer,
+    user_name text,
+    value     integer not null,
+    timestamp text,
+    UNIQUE (debate_id, node_id, user_name)
+
+);
